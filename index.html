@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felipe's AI Companion</title>
+    <style>
+        /* (Manter o mesmo CSS anterior) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .chat-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .chat-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #7f5af0;
+        }
+
+        .chat-messages {
+            height: 60vh;
+            overflow-y: auto;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 15px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .user-message {
+            background: rgba(127, 90, 240, 0.1);
+            border: 1px solid #7f5af0;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background: rgba(32, 32, 35, 0.5);
+            border: 1px solid #333;
+            margin-right: auto;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 2px #7f5af0;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            background: #7f5af0;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #6c4acf;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7f5af0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>Olá, Felipe! 👋</h1>
+                <p>Sua IA pessoal - Contexto completo carregado</p>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Converse com sua IA...">
+                <button onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = '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';
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+
+        // Perfil armazenado localmente
+        const userProfile = {
+            name: "Felipe Lopes do Nascimento",
+            nickname: "Felipe",
+            birthdate: "20/05/1989",
+            age: 35,
+            profession: ["Engenheiro Civil", "Músico"],
+            skills: ["Python", "Excel", "Gravação Musical", "Emulação de Jogos"],
+            family: {
+                wife: "Raiane",
+                son: "Pedro",
+                parents: ["Josué", "Jussara"],
+                brother: "Thiago",
+                nephews: ["Alice", "Lucas"]
+            },
+            hobbies: [
+                "Guitarra/Piano/Baixo",
+                "Fórmula 1",
+                "Games Retrô",
+                "Emulação",
+                "Pagode/Cavaquinho"
+            ],
+            goals: "Melhorar qualidade de vida com equilíbrio entre trabalho e lazer",
+            learningStyle: "Multimodal (Visual, Auditivo, Prático)",
+            values: ["Justiça", "Lealdade", "Família"]
+        };
+
+        // Salva no localStorage
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+        // Mensagem inicial personalizada
+        window.onload = () => {
+            const welcomeMessage = `Olá ${userProfile.nickname}! 🤖 Aqui está seu assistente pessoal. Posso ajudar com:
+            \n- Projetos de Engenharia Civil
+            \n- Dicas de Python/Excel
+            \n- Teoria Musical/Produção
+            \n- Configuração de Emuladores
+            \n- Análise de Corridas de F1
+            \nDigite sua dúvida ou assunto!`;
+            addMessage(welcomeMessage, 'ai');
+        };
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "llama3-70b-8192",
+                        messages: [{
+                            role: "system",
+                            content: `Você é um assistente pessoal especializado em Felipe. Contexto:
+                            Nome: ${userProfile.name}
+                            Família: ${JSON.stringify(userProfile.family)}
+                            Profissão: ${userProfile.profession.join(', ')}
+                            Hobbies: ${userProfile.hobbies.join(', ')}
+                            Valores: ${userProfile.values.join(', ')}
+                            Metas: ${userProfile.goals}
+                            Responda de forma pessoal e detalhada, usando referências do contexto.`
+                        }, {
+                            role: "user",
+                            content: message
+                        }],
+                        temperature: 0.7
+                    })
+                });
+
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                addMessage(aiResponse, 'ai');
+            } catch (error) {
+                console.error('Erro:', error);
+                addMessage('Vou recalcular... 🧠 Tente novamente!', 'ai');
+            }
+        }
+
+        function addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+            messageDiv.innerHTML = content.replace(/\n/g, '<br>'); // Mantém quebras de linha
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
