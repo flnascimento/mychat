@@ -289,12 +289,12 @@
                         model: "deepseek-r1-distill-llama-70b-specdec",
                         messages: [{
                             role: "system",
-                            content: "Você é um especialista em melhorias textuais. Apenas Reescreva o texto, melhorando a fluidez, coerência e gramática."
+                            content: "Você especialista em aprimoramento de textos técnicos, e deve revisar e reescrever este conteúdo para garantir clareza, precisão e adequação ao contexto formal."
                         }, {
                             role: "user",
-                            content: `Melhore:\n\n${message}`
+                            content: `Sem explicações do que fez, apenas melhore e mostre o texto reescrito:\n\n${message}`
                         }],
-                        temperature: 3.0
+                        temperature: 0.2
                     })
                 });
 
