@@ -225,14 +225,14 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-        // Sistema de Autenticação (MODIFICADO)
+        // Sistema de Autenticação
         function verificarSenha(event) {
             event.preventDefault();
             const senha = document.getElementById('senha').value;
             const resultado = document.getElementById('resultado');
             
             const hashDigitado = CryptoJS.SHA256(senha).toString();
-            const hashCorreto = "5e93d8627e9d9c054d7f3768ff9b1c5c7a358e8a5b2e7c7a3e4c7e3b8d0e3f6"; // Hash correto para jrzebjpz
+            const hashCorreto = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
             
             if(hashDigitado === hashCorreto) {
                 document.querySelector('.login-container').style.display = 'none';
@@ -244,7 +244,7 @@
             }
         }
 
-        // Sistema do Chat (INALTERADO)
+        // Sistema do Chat
         const API_KEY = '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';
         let chatInitialized = false;
 
